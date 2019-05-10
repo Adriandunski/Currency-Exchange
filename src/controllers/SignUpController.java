@@ -11,14 +11,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ResourceBundle;
 
 public class SignUpController implements Initializable {
@@ -46,6 +45,9 @@ public class SignUpController implements Initializable {
 
     @FXML
     private JFXRadioButton radioFemale;
+
+    @FXML
+    private Label labelBusy;
 
     private Connection connection;
     private DbHandler handler;
@@ -93,7 +95,12 @@ public class SignUpController implements Initializable {
             preparedStatement.setString(3, getGender());
             preparedStatement.setString(4, fieldLocation.getText());
 
-            preparedStatement.executeUpdate();
+            if (checkNameInDatabase(fieldLogin.getText())) {
+                System.out.println("Nazwa użytkownika zajęta.");
+                labelBusy.setVisible(true);
+            } else {
+                //preparedStatement.executeUpdate();
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,5 +114,29 @@ public class SignUpController implements Initializable {
         } else {
             return "Female";
         }
+    }
+
+    // Method check if the Name is in the Database
+    private boolean checkNameInDatabase(String name) {
+
+        String q1 = "SELECT names FROM customers";
+
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(q1);
+
+            while (rs.next()) {
+                String names = rs.getString("names");
+
+                if(names.equals(name)) {
+                    return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

@@ -1,18 +1,26 @@
 package controllers;
 
+import classes.DbConnection.DbHandler;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ResourceBundle;
 
-public class LoginWindowController {
+public class LoginWindowController implements Initializable {
 
     @FXML
     private JFXButton buttonSignUp;
@@ -29,6 +37,15 @@ public class LoginWindowController {
     @FXML
     private JFXButton buttonForogtYourPassword;
 
+    private Connection connection;
+    private DbHandler handler;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+        handler = new DbHandler();
+    }
+
     @FXML
     void forgotPassword(ActionEvent event) {
 
@@ -37,6 +54,31 @@ public class LoginWindowController {
     @FXML
     void logIn(ActionEvent event) {
 
+        connection = handler.getConnection();
+
+        String q1 = String.format("SELECT names, password FROM customers WHERE names = '%s'", fieldLogin.getText());
+
+        Label:
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(q1);
+
+            while (rs.next()) {
+
+                String name = rs.getString("names");
+                String password = rs.getString("password");
+
+                if (password.equals(fieldPassword.getText())) {
+                    System.out.println("Success!");
+                    break Label;
+                }
+            }
+
+            System.out.println("Wrong password or Login.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

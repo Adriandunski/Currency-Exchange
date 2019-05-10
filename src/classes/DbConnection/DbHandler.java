@@ -21,7 +21,6 @@ public class DbHandler extends Configs {
             e.printStackTrace();
         }
 
-        System.out.println("Connection Succesful");
         return dbConnection;
     }
 }
