@@ -40,6 +40,8 @@ public class LoginWindowController implements Initializable {
     private Connection connection;
     private DbHandler handler;
 
+    private PersonMenuController instancePerson;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -70,6 +72,7 @@ public class LoginWindowController implements Initializable {
 
                 if (password.equals(fieldPassword.getText())) {
                     System.out.println("Success!");
+                    successLogin();
                     break Label;
                 }
             }
@@ -97,6 +100,31 @@ public class LoginWindowController implements Initializable {
             stage.show();
 
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method started when We entry correct Login and Password.
+    private void successLogin() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/PersonWindow.fxml"));
+            Parent root = loader.load();
+            instancePerson = loader.getController();
+            instancePerson.setInstanceLoginMenu(this);
+
+            //Parent root = FXMLLoader.load(getClass().getResource("../fxmls/PersonWindow.fxml"));
+            Scene scene = new Scene(root);
+
+            buttonLogIn.getScene().getWindow().hide();
+
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.setTitle("Your Menu: " + fieldLogin.getText());
+            stage.show();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
