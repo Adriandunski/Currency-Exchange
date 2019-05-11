@@ -41,7 +41,7 @@
       <Label fx:id="labelDeposit" layoutX="482.0" layoutY="78.0" prefHeight="17.0" prefWidth="61.0" text="Deposit:" />
       <Label fx:id="labelQuantity" alignment="CENTER_RIGHT" layoutX="550.0" layoutY="78.0" prefHeight="17.0" prefWidth="68.0" />
       <Label fx:id="labelExchangeA" layoutX="482.0" layoutY="104.0" text="Kurs:" visible="false" />
-      <Label fx:id="labelExchangeB" alignment="CENTER_RIGHT" layoutX="550.0" layoutY="104.0" prefHeight="17.0" prefWidth="68.0" text="Label" visible="false" />
+      <Label fx:id="labelExchangeB" alignment="CENTER_RIGHT" layoutX="524.0" layoutY="104.0" prefHeight="17.0" prefWidth="94.0" text="Label" visible="false" />
       <Label fx:id="labelRecieveA" layoutX="480.0" layoutY="137.0" text="Otrzymasz" visible="false" />
       <Label fx:id="labelReciveB" alignment="CENTER_RIGHT" layoutX="546.0" layoutY="137.0" prefHeight="17.0" prefWidth="68.0" text="Label" visible="false" />
       <JFXButton fx:id="buttonCheckOut" layoutX="476.0" layoutY="169.0" onAction="#checkOutExchange" prefHeight="25.0" prefWidth="115.0" text="Check out" visible="false" />

@@ -1,74 +1,55 @@
 package controllers;
 
 import classes.Currence;
+import classes.CurrencyConverter;
 import classes.DbConnection.DbHandler;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class PersonMenuController implements Initializable {
 
-    @FXML
-    private JFXButton buttonCheck;
-
-    @FXML
-    private GridPane grindPaneCurrence;
-
-    @FXML
-    private ChoiceBox<Currence> choiceBoxA;
-
-    @FXML
-    private ChoiceBox<Currence> choiceBoxB;
-
-    @FXML
-    private JFXTextField fieldCheck;
-
-    @FXML
-    private JFXButton buttonLogOut;
-
-    @FXML
-    private Label labelDeposit;
-
-    @FXML
-    private Label labelQuantity;
-
-    @FXML
-    private Label labelExchangeA;
-
-    @FXML
-    private Label labelExchangeB;
-
-    @FXML
-    private Label labelRecieveA;
-
-    @FXML
-    private Label labelReciveB;
-
-    @FXML
-    private JFXButton buttonCheckOut;
-
-    @FXML
-    private JFXButton buttonCancel;
+    @FXML private JFXButton buttonCheck;
+    @FXML private GridPane grindPaneCurrence;
+    @FXML private ChoiceBox<Currence> choiceBoxA;
+    @FXML private ChoiceBox<Currence> choiceBoxB;
+    @FXML private JFXTextField fieldCheck;
+    @FXML private JFXButton buttonLogOut;
+    @FXML private Label labelDeposit;
+    @FXML private Label labelQuantity;
+    @FXML private Label labelExchangeA;
+    @FXML private Label labelExchangeB;
+    @FXML private Label labelRecieveA;
+    @FXML private Label labelReciveB;
+    @FXML private JFXButton buttonCheckOut;
+    @FXML private JFXButton buttonCancel;
 
     private Map<Currence, Double> funds = new HashMap<>();
     private Connection connection = new DbHandler().getConnection();
     private DbHandler handler;
     private int indexOfRow = 0; // Index of GrindPane;
+    private BigDecimal exchange;
+    private Timer timer;
 
     private LoginWindowController instanceLoginMenu;
 
@@ -93,14 +74,7 @@ public class PersonMenuController implements Initializable {
     @FXML
     void cancelExchange(ActionEvent event) {
 
-        buttonCheck.setVisible(true);
-        buttonCheckOut.setVisible(false);
-        buttonCancel.setVisible(false);
-
-        labelExchangeA.setVisible(false);
-        labelExchangeB.setVisible(false);
-        labelRecieveA.setVisible(false);
-        labelReciveB.setVisible(false);
+        cancelEx();
     }
 
     @FXML
@@ -112,9 +86,34 @@ public class PersonMenuController implements Initializable {
 
         labelExchangeA.setVisible(true);
         labelExchangeB.setVisible(true);
+
         labelRecieveA.setVisible(true);
         labelReciveB.setVisible(true);
 
+        exchange = CurrencyConverter.convert(choiceBoxA.getValue(), choiceBoxB.getValue());
+
+        BigDecimal big = new BigDecimal(fieldCheck.getText());
+        labelExchangeB.setText(String.format("1 %s - %.4f", choiceBoxA.getValue().getCurrence(), exchange.doubleValue()));
+        labelReciveB.setText(String.format("%.2f %s", exchange.multiply(big).doubleValue(), choiceBoxB.getValue().getCurrence()));
+
+        buttonCheckOut.setText(String.format("Confrim - (15)"));
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            int m = 15;
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+
+                    buttonCheckOut.setText(String.format("Confrim - (%d)", m--));
+                    if (m == -2) {
+                        cancelEx();
+                        timer.cancel();
+                    }
+                });
+            }
+        }, 500, 1000);
     }
 
     @FXML
@@ -125,10 +124,34 @@ public class PersonMenuController implements Initializable {
     @FXML
     void logOut(ActionEvent event) {
 
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("../fxmls/LoginWindow.fxml"));
+            Scene scene = new Scene(root);
+
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("Login Cantor");
+            buttonCheckOut.getScene().getWindow().hide();
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addFund() {
 
+    }
+
+    private void cancelEx() {
+        buttonCheck.setVisible(true);
+        buttonCheckOut.setVisible(false);
+        buttonCancel.setVisible(false);
+
+        labelExchangeA.setVisible(false);
+        labelExchangeB.setVisible(false);
+        labelRecieveA.setVisible(false);
+        labelReciveB.setVisible(false);
     }
 
     private void loadFunds() {
@@ -181,7 +204,7 @@ public class PersonMenuController implements Initializable {
         }
     }
 
-    //Method check conditions to setDisable(false), two choises box must be selected and one textField.
+    //Method check conditions to setDisable(false), two choises box must be selected and numbers in textField.
     private void checkConditions() {
 
             if (choiceBoxA.getValue() != null && choiceBoxB.getValue() != null && checkNumbers()) {

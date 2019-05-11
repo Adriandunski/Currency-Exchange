@@ -2,6 +2,7 @@ package controllers;
 
 import classes.DbConnection.DbHandler;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
@@ -12,7 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -37,6 +38,9 @@ public class LoginWindowController implements Initializable {
     @FXML
     private JFXButton buttonForogtYourPassword;
 
+    @FXML
+    private JFXCheckBox checkBoxRememberMe;
+
     private Connection connection;
     private DbHandler handler;
 
@@ -46,6 +50,7 @@ public class LoginWindowController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         handler = new DbHandler();
+        setFields();
     }
 
     @FXML
@@ -124,8 +129,65 @@ public class LoginWindowController implements Initializable {
             stage.setTitle("Your Menu: " + fieldLogin.getText());
             stage.show();
 
+            FileWriter fw = new FileWriter("Pass.txt");
+            PrintWriter pw = new PrintWriter(fw);
+
+            if (checkBoxRememberMe.isSelected()) {
+
+                pw.print("Login - " + fieldLogin.getText());
+                pw.print("Password - " + fieldPassword.getText());
+                pw.print("Remember - " + "T");
+
+
+            } else {
+                pw.print("");
+            }
+
+            pw.close();
+
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    //Methd imports data from txt (Remember Me)
+    private void setFields() {
+
+        File f = new File("Pass.txt");
+
+        if (f.exists()) {
+            try {
+                FileReader fr = new FileReader("Pass.txt");
+                BufferedReader bf = new BufferedReader(fr);
+
+                String output;
+                StringBuffer stringBuffer = new StringBuffer();
+
+                while ((output = bf.readLine()) != null) {
+                    stringBuffer.append(output);
+                }
+
+                bf.close();
+
+                String BFname = stringBuffer.substring(8, stringBuffer.indexOf("Password"));
+                String BFpassword = stringBuffer.substring(stringBuffer.indexOf("Password") + 11, stringBuffer.indexOf("Remember"));
+                String BFremember = stringBuffer.substring(stringBuffer.length() - 1);
+
+
+                fieldLogin.setText(BFname);
+                fieldPassword.setText(BFpassword);
+
+                if (BFremember.equals("T")) {
+                    checkBoxRememberMe.setSelected(true);
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (StringIndexOutOfBoundsException e) {
+
+            }
         }
     }
 }
