@@ -5,7 +5,6 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginWindowController">
    <children>
       <JFXButton fx:id="buttonSignUp" layoutX="548.0" layoutY="33.0" onAction="#signUp" text="Sign Up" />
