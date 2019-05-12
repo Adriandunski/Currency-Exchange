@@ -41,5 +41,6 @@
             <RowConstraints />
          </rowConstraints>
       </GridPane>
+      <JFXButton fx:id="buttonAddFunds" layoutX="22.0" layoutY="350.0" onAction="#addFund" text="Add Funds" />
    </children>
 </AnchorPane>

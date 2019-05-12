@@ -11,6 +11,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
@@ -43,6 +44,7 @@ public class PersonMenuController implements Initializable {
     @FXML private Label labelReciveB;
     @FXML private JFXButton buttonCheckOut;
     @FXML private JFXButton buttonCancel;
+    @FXML private JFXButton buttonAddFunds;
 
     private Map<Currence, Double> funds = new HashMap<>();
     private Connection connection = new DbHandler().getConnection();
@@ -50,10 +52,8 @@ public class PersonMenuController implements Initializable {
     private int indexOfRow = 0; // Index of GrindPane;
     private BigDecimal exchange;
     private Timer timer;
-    private String name;
+    private String name =  "Adrian";
     private double amountEx;
-
-    private LoginWindowController instanceLoginMenu;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -68,10 +68,13 @@ public class PersonMenuController implements Initializable {
                         Double.parseDouble(fieldCheck.getText()), choiceBoxA.getValue().getCurrence()));
             }
         });
+
+        loadFunds();
     }
 
     @FXML
     void cancelExchange(ActionEvent event) {
+
 
         cancelEx();
     }
@@ -127,19 +130,41 @@ public class PersonMenuController implements Initializable {
     @FXML
     void logOut(ActionEvent event) {
 
+
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../fxmls/LoginWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/LoginWindow.fxml"));
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+
+            Parent root = loader.load();
             Scene scene = new Scene(root);
 
-            Stage stage = new Stage();
             stage.setScene(scene);
-            stage.setTitle("Login Cantor");
-            buttonCheckOut.getScene().getWindow().hide();
             stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void addFund(ActionEvent event) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/AddFund.fxml"));
+            Parent root = loader.load();
+
+            buttonAddFunds.getScene().getWindow().hide();
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+
+            stage.setScene(scene);
+            stage.show();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     //Method connects with Database and set current amounts of currence
@@ -164,10 +189,6 @@ public class PersonMenuController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private void addFund() {
-
     }
 
     private void cancelEx() {
@@ -279,13 +300,9 @@ public class PersonMenuController implements Initializable {
         return true;
     }
 
-    public void setInstanceLoginMenu(LoginWindowController instance) {
-        this.instanceLoginMenu = instance;
-    }
 
     public void setName(String s) {
         this.name = s;
-        loadFunds();
     }
 
     public String getName() {

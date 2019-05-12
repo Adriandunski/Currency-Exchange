@@ -43,8 +43,20 @@ public class LoginWindowController implements Initializable {
 
     private Connection connection;
     private DbHandler handler;
+    private static LoginWindowController loginWindowControllerInstance;
 
-    private PersonMenuController instancePerson;
+    public LoginWindowController(){
+        loginWindowControllerInstance = this;
+    }
+
+    public static LoginWindowController getInstance() {
+        return loginWindowControllerInstance;
+    }
+
+    public String getName() {
+        return fieldLogin.getText();
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -115,8 +127,6 @@ public class LoginWindowController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Parent root = loader.load();
-            instancePerson = loader.getController();
-            instancePerson.setName(fieldLogin.getText());
 
             //Parent root = FXMLLoader.load(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Scene scene = new Scene(root);
