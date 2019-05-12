@@ -116,7 +116,7 @@ public class LoginWindowController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Parent root = loader.load();
             instancePerson = loader.getController();
-            instancePerson.setInstanceLoginMenu(this);
+            instancePerson.setName(fieldLogin.getText());
 
             //Parent root = FXMLLoader.load(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Scene scene = new Scene(root);

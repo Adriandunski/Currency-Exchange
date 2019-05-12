@@ -50,13 +50,13 @@ public class PersonMenuController implements Initializable {
     private int indexOfRow = 0; // Index of GrindPane;
     private BigDecimal exchange;
     private Timer timer;
+    private String name;
+    private double amountEx;
 
     private LoginWindowController instanceLoginMenu;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        loadFunds();
 
         choiceBoxA.addEventFilter(Event.ANY, x -> checkConditions());
         choiceBoxB.addEventFilter(Event.ANY, x -> checkConditions());
@@ -68,7 +68,6 @@ public class PersonMenuController implements Initializable {
                         Double.parseDouble(fieldCheck.getText()), choiceBoxA.getValue().getCurrence()));
             }
         });
-
     }
 
     @FXML
@@ -94,7 +93,8 @@ public class PersonMenuController implements Initializable {
 
         BigDecimal big = new BigDecimal(fieldCheck.getText());
         labelExchangeB.setText(String.format("1 %s - %.4f", choiceBoxA.getValue().getCurrence(), exchange.doubleValue()));
-        labelReciveB.setText(String.format("%.2f %s", exchange.multiply(big).doubleValue(), choiceBoxB.getValue().getCurrence()));
+        amountEx = exchange.multiply(big).doubleValue();
+        labelReciveB.setText(String.format("%.2f %s", amountEx, choiceBoxB.getValue().getCurrence()));
 
         buttonCheckOut.setText(String.format("Confrim - (15)"));
 
@@ -113,12 +113,15 @@ public class PersonMenuController implements Initializable {
                     }
                 });
             }
-        }, 500, 1000);
+        }, 250, 1000);
     }
 
     @FXML
     void checkOutExchange(ActionEvent event) {
 
+        plusFund(amountEx, Double.parseDouble(fieldCheck.getText()));
+
+        cancelEx();
     }
 
     @FXML
@@ -139,6 +142,30 @@ public class PersonMenuController implements Initializable {
         }
     }
 
+    //Method connects with Database and set current amounts of currence
+    private void plusFund(double amountPlus, double amountMinus) {
+
+        String currencyPlus = choiceBoxB.getValue().getCurrence();
+        double temp = funds.get(choiceBoxB.getValue()) + amountPlus;
+
+        String currencyMinus = choiceBoxA.getValue().getCurrence();
+        double temp2 = funds.get(choiceBoxA.getValue()) - amountMinus;
+
+        String q1 = "UPDATE customers SET " + currencyPlus + " = " + temp + "WHERE names = '" + getName() + "'";
+        String q2 = "UPDATE customers SET " + currencyMinus + " = " + temp2 + "WHERE names = '" + getName() + "'";
+
+        try {
+            Statement st = connection.createStatement();
+            st.execute(q1);
+            st.execute(q2);
+
+            loadFunds();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void addFund() {
 
     }
@@ -152,12 +179,15 @@ public class PersonMenuController implements Initializable {
         labelExchangeB.setVisible(false);
         labelRecieveA.setVisible(false);
         labelReciveB.setVisible(false);
+
+        timer.cancel();
     }
 
     private void loadFunds() {
 
-        String q1 = "SELECT * FROM customers WHERE names = 'Adrian'";
 
+        String q1 = "SELECT * FROM customers WHERE names = '" + getName() + "'";
+        clearGrindPane();
         try {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(q1);
@@ -165,11 +195,14 @@ public class PersonMenuController implements Initializable {
             while (rs.next()) {
                 for(Currence current : Currence.values()) {
                     String string = current.getCurrence();
-                    double amount = Double.parseDouble(rs.getString(current.getCurrence()));
 
+                    double amount = rs.getDouble(current.getCurrence());
                     funds.put(current, amount);
 
-                    addGrindPane(string, String.valueOf(amount));
+                    String temp = String.format("%.2f", amount);
+                    if (amount > 0) {
+                        addGrindPane(string, temp);
+                    }
                 }
             }
 
@@ -186,10 +219,19 @@ public class PersonMenuController implements Initializable {
         Label label = new Label(l1 + ":");
         Label label2 = new Label("  " + l2);
 
+        label.setStyle("-fx-font-size: 15; -fx-hgap: 10");
+        label2.setStyle("-fx-font-size: 15; -fx-hgap: 10");
+
+
         grindPaneCurrence.add(label, 0, indexOfRow);
         grindPaneCurrence.add(label2, 1, indexOfRow);
 
         indexOfRow++;
+    }
+
+    private void clearGrindPane() {
+        int temp = grindPaneCurrence.getChildren().size();
+        grindPaneCurrence.getChildren().remove(0, temp);
     }
 
     private void addBoxesToChoiceBox() {
@@ -210,7 +252,12 @@ public class PersonMenuController implements Initializable {
             if (choiceBoxA.getValue() != null && choiceBoxB.getValue() != null && checkNumbers()) {
 
                 if(!choiceBoxA.getValue().equals(choiceBoxB.getValue()) && fieldCheck.getText().length() > 0) {
-                    buttonCheck.setDisable(false);
+
+                    if (funds.get(choiceBoxA.getValue()) < Double.parseDouble(fieldCheck.getText())) {
+                        buttonCheck.setDisable(true);
+                    } else {
+                        buttonCheck.setDisable(false);
+                    }
                 } else{
                     buttonCheck.setDisable(true);
                 }
@@ -234,5 +281,14 @@ public class PersonMenuController implements Initializable {
 
     public void setInstanceLoginMenu(LoginWindowController instance) {
         this.instanceLoginMenu = instance;
+    }
+
+    public void setName(String s) {
+        this.name = s;
+        loadFunds();
+    }
+
+    public String getName() {
+        return name;
     }
 }
