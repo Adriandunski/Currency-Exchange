@@ -8,7 +8,7 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -16,11 +16,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.sql.*;
-import java.util.ResourceBundle;
 
-public class SignUpController implements Initializable {
+public class SignUpController {
 
     @FXML
     private JFXTextField fieldLogin;
@@ -53,9 +51,12 @@ public class SignUpController implements Initializable {
     private DbHandler handler;
     private PreparedStatement preparedStatement;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public SignUpController() {
 
+    }
+
+    @FXML
+    void initialize() {
         handler = new DbHandler();
     }
 
@@ -63,15 +64,13 @@ public class SignUpController implements Initializable {
     void logIn(ActionEvent event) {
 
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../fxmls/LoginWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/LoginWindow.fxml"));
+            System.out.println();
+            Parent root = loader.load();
             Scene scene = new Scene(root);
 
-            buttonSignIn.getScene().getWindow().hide();
-
-            Stage stage = new Stage();
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
-            stage.setTitle("Login Cantor");
-            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {

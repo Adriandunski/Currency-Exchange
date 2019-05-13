@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,14 +20,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class PersonMenuController implements Initializable {
+public class PersonMenuController {
 
     @FXML private JFXButton buttonCheck;
     @FXML private GridPane grindPaneCurrence;
@@ -47,16 +48,35 @@ public class PersonMenuController implements Initializable {
     @FXML private JFXButton buttonAddFunds;
 
     private Map<Currence, Double> funds = new HashMap<>();
-    private Connection connection = new DbHandler().getConnection();
+    private Connection connection;
     private DbHandler handler;
-    private int indexOfRow = 0; // Index of GrindPane;
+
+    private int indexOfRow = 0; // Index of GrindPane's Rows
     private BigDecimal exchange;
     private Timer timer;
-    private String name =  "Adrian";
+    private String name;
     private double amountEx;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    private static PersonMenuController instancePerson;
+
+    public PersonMenuController() {
+        instancePerson = this;
+    }
+
+    public static PersonMenuController getInstance() {
+        return instancePerson;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @FXML
+    void initialize() {
+
+        handler = new DbHandler();
+        name = LoginWindowController.getLoginInstance().getName();
+        loadFunds();
 
         choiceBoxA.addEventFilter(Event.ANY, x -> checkConditions());
         choiceBoxB.addEventFilter(Event.ANY, x -> checkConditions());
@@ -68,14 +88,10 @@ public class PersonMenuController implements Initializable {
                         Double.parseDouble(fieldCheck.getText()), choiceBoxA.getValue().getCurrence()));
             }
         });
-
-        loadFunds();
     }
 
     @FXML
     void cancelExchange(ActionEvent event) {
-
-
         cancelEx();
     }
 
@@ -121,7 +137,6 @@ public class PersonMenuController implements Initializable {
 
     @FXML
     void checkOutExchange(ActionEvent event) {
-
         plusFund(amountEx, Double.parseDouble(fieldCheck.getText()));
 
         cancelEx();
@@ -129,15 +144,13 @@ public class PersonMenuController implements Initializable {
 
     @FXML
     void logOut(ActionEvent event) {
-
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/LoginWindow.fxml"));
-            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
 
             Parent root = loader.load();
             Scene scene = new Scene(root);
 
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
             stage.show();
 
@@ -152,41 +165,13 @@ public class PersonMenuController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/AddFund.fxml"));
             Parent root = loader.load();
-
-            buttonAddFunds.getScene().getWindow().hide();
             Scene scene = new Scene(root);
-            Stage stage = new Stage();
 
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
             stage.show();
 
-
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    //Method connects with Database and set current amounts of currence
-    private void plusFund(double amountPlus, double amountMinus) {
-
-        String currencyPlus = choiceBoxB.getValue().getCurrence();
-        double temp = funds.get(choiceBoxB.getValue()) + amountPlus;
-
-        String currencyMinus = choiceBoxA.getValue().getCurrence();
-        double temp2 = funds.get(choiceBoxA.getValue()) - amountMinus;
-
-        String q1 = "UPDATE customers SET " + currencyPlus + " = " + temp + "WHERE names = '" + getName() + "'";
-        String q2 = "UPDATE customers SET " + currencyMinus + " = " + temp2 + "WHERE names = '" + getName() + "'";
-
-        try {
-            Statement st = connection.createStatement();
-            st.execute(q1);
-            st.execute(q2);
-
-            loadFunds();
-
-        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -206,6 +191,7 @@ public class PersonMenuController implements Initializable {
 
     private void loadFunds() {
 
+        connection = handler.getConnection();
 
         String q1 = "SELECT * FROM customers WHERE names = '" + getName() + "'";
         clearGrindPane();
@@ -235,6 +221,34 @@ public class PersonMenuController implements Initializable {
         }
     }
 
+    private void plusFund(double amountPlus, double amountMinus) {
+
+        String currencyPlus = choiceBoxB.getValue().getCurrence();
+        double temp = funds.get(choiceBoxB.getValue()) + amountPlus;
+
+        String currencyMinus = choiceBoxA.getValue().getCurrence();
+        double temp2 = funds.get(choiceBoxA.getValue()) - amountMinus;
+
+        String q1 = "UPDATE customers SET " + currencyPlus + " = " + temp + "WHERE names = '" + getName() + "'";
+        String q2 = "UPDATE customers SET " + currencyMinus + " = " + temp2 + "WHERE names = '" + getName() + "'";
+
+        try {
+            Statement st = connection.createStatement();
+            st.execute(q1);
+            st.execute(q2);
+
+            loadFunds();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearGrindPane() {
+        int temp = grindPaneCurrence.getChildren().size();
+        grindPaneCurrence.getChildren().remove(0, temp);
+    }
+
     private void addGrindPane(String l1, String l2) {
 
         Label label = new Label(l1 + ":");
@@ -250,11 +264,6 @@ public class PersonMenuController implements Initializable {
         indexOfRow++;
     }
 
-    private void clearGrindPane() {
-        int temp = grindPaneCurrence.getChildren().size();
-        grindPaneCurrence.getChildren().remove(0, temp);
-    }
-
     private void addBoxesToChoiceBox() {
 
         for (Map.Entry<Currence, Double> entries : funds.entrySet()) {
@@ -267,25 +276,24 @@ public class PersonMenuController implements Initializable {
         }
     }
 
-    //Method check conditions to setDisable(false), two choises box must be selected and numbers in textField.
     private void checkConditions() {
 
-            if (choiceBoxA.getValue() != null && choiceBoxB.getValue() != null && checkNumbers()) {
+        if (choiceBoxA.getValue() != null && choiceBoxB.getValue() != null && checkNumbers()) {
 
-                if(!choiceBoxA.getValue().equals(choiceBoxB.getValue()) && fieldCheck.getText().length() > 0) {
+            if(!choiceBoxA.getValue().equals(choiceBoxB.getValue()) && fieldCheck.getText().length() > 0) {
 
-                    if (funds.get(choiceBoxA.getValue()) < Double.parseDouble(fieldCheck.getText())) {
-                        buttonCheck.setDisable(true);
-                    } else {
-                        buttonCheck.setDisable(false);
-                    }
-                } else{
+                if (funds.get(choiceBoxA.getValue()) < Double.parseDouble(fieldCheck.getText())) {
                     buttonCheck.setDisable(true);
+                } else {
+                    buttonCheck.setDisable(false);
                 }
-
-            } else {
+            } else{
                 buttonCheck.setDisable(true);
             }
+
+        } else {
+            buttonCheck.setDisable(true);
+        }
     }
 
     private boolean checkNumbers() {
@@ -298,14 +306,5 @@ public class PersonMenuController implements Initializable {
         }
 
         return true;
-    }
-
-
-    public void setName(String s) {
-        this.name = s;
-    }
-
-    public String getName() {
-        return name;
     }
 }

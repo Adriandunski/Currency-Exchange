@@ -8,20 +8,18 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ResourceBundle;
 
-public class LoginWindowController implements Initializable {
+public class LoginWindowController {
 
     @FXML
     private JFXButton buttonSignUp;
@@ -41,15 +39,16 @@ public class LoginWindowController implements Initializable {
     @FXML
     private JFXCheckBox checkBoxRememberMe;
 
-    private Connection connection;
-    private DbHandler handler;
     private static LoginWindowController loginWindowControllerInstance;
+    private DbHandler handler;
+    private Connection connection;
 
-    public LoginWindowController(){
+    public LoginWindowController() {
+
         loginWindowControllerInstance = this;
     }
 
-    public static LoginWindowController getInstance() {
+    public static LoginWindowController getLoginInstance() {
         return loginWindowControllerInstance;
     }
 
@@ -57,9 +56,8 @@ public class LoginWindowController implements Initializable {
         return fieldLogin.getText();
     }
 
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    void initialize() {
 
         handler = new DbHandler();
         setFields();
@@ -88,8 +86,7 @@ public class LoginWindowController implements Initializable {
                 String password = rs.getString("password");
 
                 if (password.equals(fieldPassword.getText())) {
-                    System.out.println("Success!");
-                    successLogin();
+                    successLogin(event);
                     break Label;
                 }
             }
@@ -105,14 +102,11 @@ public class LoginWindowController implements Initializable {
     void signUp(ActionEvent event) {
 
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../fxmls/SignUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/SignUp.fxml"));
+            Parent root = loader.load();
             Scene scene = new Scene(root);
 
-            buttonSignUp.getScene().getWindow().hide();
-
-            Stage stage = new Stage();
-            stage.setTitle("Sign Up");
-            stage.setResizable(false);
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
             stage.show();
 
@@ -121,24 +115,21 @@ public class LoginWindowController implements Initializable {
         }
     }
 
-    // Method started when We entry correct Login and Password.
-    private void successLogin() {
+    public void successLogin(ActionEvent event) {
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Parent root = loader.load();
-
-            //Parent root = FXMLLoader.load(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Scene scene = new Scene(root);
 
-            buttonLogIn.getScene().getWindow().hide();
-
-            Stage stage = new Stage();
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
-            stage.setResizable(false);
-            stage.setTitle("Your Menu: " + fieldLogin.getText());
             stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        try {
             FileWriter fw = new FileWriter("Pass.txt");
             PrintWriter pw = new PrintWriter(fw);
 
@@ -154,13 +145,11 @@ public class LoginWindowController implements Initializable {
             }
 
             pw.close();
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    //Methd imports data from txt (Remember Me)
     private void setFields() {
 
         File f = new File("Pass.txt");
