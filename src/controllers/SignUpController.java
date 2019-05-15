@@ -58,6 +58,10 @@ public class SignUpController {
     @FXML
     void initialize() {
         handler = new DbHandler();
+
+        fieldLogin.setStyle("-fx-text-inner-color: #FFFFFF; -fx-prompt-text-fill: #FFFFFF");
+        fieldPassword.setStyle("-fx-text-inner-color: #FFFFFF; -fx-prompt-text-fill: #FFFFFF");
+        fieldLocation.setStyle("-fx-text-inner-color: #FFFFFF; -fx-prompt-text-fill: #FFFFFF");
     }
 
     @FXML

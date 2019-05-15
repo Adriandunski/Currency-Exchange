@@ -61,6 +61,9 @@ public class LoginWindowController {
 
         handler = new DbHandler();
         setFields();
+
+        fieldLogin.setStyle("-fx-text-inner-color: #FFFFFF; -fx-prompt-text-fill: #FFFFFF");
+        fieldPassword.setStyle("-fx-text-inner-color: #FFFFFF; -fx-prompt-text-fill: #FFFFFF");
     }
 
     @FXML
