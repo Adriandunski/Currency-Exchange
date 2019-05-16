@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="231.0" y="486.0">classes.SystemOfCantor</node>
+    <node x="5.5" y="414.0">classes.DbConnection.DbHandler</node>
+    <node x="0.0" y="293.0">classes.DbConnection.Configs</node>
+    <node x="0.0" y="486.0">controllers.MasterMenuController</node>
+    <node x="0.0" y="0.0">controllers.SignUpController</node>
+    <node x="260.0" y="0.0">controllers.LoginWindowController</node>
+    <node x="165.0" y="293.0">controllers.PersonMenuController</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="classes.DbConnection.DbHandler" target="classes.DbConnection.Configs">
+      <point x="0.0" y="-13.5" />
+      <point x="0.0" y="35.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="817.5" y="284.0" />
+  <SelectedNodes>
+    <node>controllers.PersonMenuController</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

@@ -15,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -46,6 +47,8 @@ public class PersonMenuController {
     @FXML private JFXButton buttonCheckOut;
     @FXML private JFXButton buttonCancel;
     @FXML private JFXButton buttonAddFunds;
+    @FXML private ImageView imageViewPlus;
+    @FXML private ImageView imageviewExchange;
 
     private Map<Currence, Double> funds = new HashMap<>();
     private Connection connection;
@@ -73,6 +76,8 @@ public class PersonMenuController {
 
     @FXML
     void initialize() {
+
+        fieldCheck.setStyle("-fx-prompt-text-fill: #FFFFFF; -fx-text-fill: #FFFFFF");
 
         handler = new DbHandler();
         name = LoginWindowController.getLoginInstance().getName();
@@ -107,6 +112,8 @@ public class PersonMenuController {
 
         labelRecieveA.setVisible(true);
         labelReciveB.setVisible(true);
+        imageviewExchange.setVisible(true);
+        imageViewPlus.setVisible(true);
 
         exchange = CurrencyConverter.convert(choiceBoxA.getValue(), choiceBoxB.getValue());
 
@@ -186,6 +193,9 @@ public class PersonMenuController {
         labelRecieveA.setVisible(false);
         labelReciveB.setVisible(false);
 
+        imageviewExchange.setVisible(false);
+        imageViewPlus.setVisible(false);
+
         timer.cancel();
     }
 
@@ -254,8 +264,8 @@ public class PersonMenuController {
         Label label = new Label(l1 + ":");
         Label label2 = new Label("  " + l2);
 
-        label.setStyle("-fx-font-size: 15; -fx-hgap: 10");
-        label2.setStyle("-fx-font-size: 15; -fx-hgap: 10");
+        label.setStyle("-fx-font-size: 16; -fx-text-fill: #FFFFFF; -fx-font-family: 'Bodoni MT'");
+        label2.setStyle("-fx-font-size: 16; -fx-text-fill: #FFFFFF; -fx-font-family: 'Bodoni MT'");
 
 
         grindPaneCurrence.add(label, 0, indexOfRow);
