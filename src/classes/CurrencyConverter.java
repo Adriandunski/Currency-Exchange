@@ -49,4 +49,3 @@ public class CurrencyConverter {
         return null;
     }
 }
-

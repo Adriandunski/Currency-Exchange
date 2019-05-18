@@ -20,40 +20,19 @@ import java.sql.*;
 
 public class SignUpController {
 
-    @FXML
-    private JFXTextField fieldLogin;
-
-    @FXML
-    private JFXPasswordField fieldPassword;
-
-    @FXML
-    private JFXTextField fieldLocation;
-
-    @FXML
-    private JFXButton buttonLogIn;
-
-    @FXML
-    private JFXButton buttonSignIn;
-
-    @FXML
-    private JFXRadioButton radioMale;
-
-    @FXML
-    private ToggleGroup grander;
-
-    @FXML
-    private JFXRadioButton radioFemale;
-
-    @FXML
-    private Label labelBusy;
+    @FXML private JFXTextField fieldLogin;
+    @FXML private JFXPasswordField fieldPassword;
+    @FXML private JFXTextField fieldLocation;
+    @FXML private JFXButton buttonLogIn;
+    @FXML private JFXButton buttonSignIn;
+    @FXML private JFXRadioButton radioMale;
+    @FXML private ToggleGroup grander;
+    @FXML private JFXRadioButton radioFemale;
+    @FXML private Label labelBusy;
 
     private Connection connection;
     private DbHandler handler;
     private PreparedStatement preparedStatement;
-
-    public SignUpController() {
-
-    }
 
     @FXML
     void initialize() {
@@ -102,7 +81,7 @@ public class SignUpController {
                 System.out.println("Nazwa użytkownika zajęta.");
                 labelBusy.setVisible(true);
             } else {
-                //preparedStatement.executeUpdate();
+                preparedStatement.executeUpdate();
             }
 
         } catch (SQLException e) {

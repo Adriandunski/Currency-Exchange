@@ -21,30 +21,18 @@ import java.sql.Statement;
 
 public class LoginWindowController {
 
-    @FXML
-    private JFXButton buttonSignUp;
-
-    @FXML
-    private JFXPasswordField fieldPassword;
-
-    @FXML
-    private JFXTextField fieldLogin;
-
-    @FXML
-    private JFXButton buttonLogIn;
-
-    @FXML
-    private JFXButton buttonForogtYourPassword;
-
-    @FXML
-    private JFXCheckBox checkBoxRememberMe;
+    @FXML private JFXButton buttonSignUp;
+    @FXML private JFXPasswordField fieldPassword;
+    @FXML private JFXTextField fieldLogin;
+    @FXML private JFXButton buttonLogIn;
+    @FXML private JFXButton buttonForogtYourPassword;
+    @FXML private JFXCheckBox checkBoxRememberMe;
 
     private static LoginWindowController loginWindowControllerInstance;
     private DbHandler handler;
     private Connection connection;
 
     public LoginWindowController() {
-
         loginWindowControllerInstance = this;
     }
 
@@ -112,7 +100,6 @@ public class LoginWindowController {
             Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.setScene(scene);
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -141,8 +128,6 @@ public class LoginWindowController {
                 pw.print("Login - " + fieldLogin.getText());
                 pw.print("Password - " + fieldPassword.getText());
                 pw.print("Remember - " + "T");
-
-
             } else {
                 pw.print("");
             }
@@ -174,7 +159,6 @@ public class LoginWindowController {
                 String BFname = stringBuffer.substring(8, stringBuffer.indexOf("Password"));
                 String BFpassword = stringBuffer.substring(stringBuffer.indexOf("Password") + 11, stringBuffer.indexOf("Remember"));
                 String BFremember = stringBuffer.substring(stringBuffer.length() - 1);
-
 
                 fieldLogin.setText(BFname);
                 fieldPassword.setText(BFpassword);

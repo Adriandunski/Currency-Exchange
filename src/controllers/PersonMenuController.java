@@ -1,5 +1,6 @@
 package controllers;
 
+import classes.CheckNumber;
 import classes.Currence;
 import classes.CurrencyConverter;
 import classes.DbConnection.DbHandler;
@@ -144,13 +145,14 @@ public class PersonMenuController {
 
     @FXML
     void checkOutExchange(ActionEvent event) {
-        plusFund(amountEx, Double.parseDouble(fieldCheck.getText()));
 
+        plusFund(amountEx, Double.parseDouble(fieldCheck.getText()));
         cancelEx();
     }
 
     @FXML
     void logOut(ActionEvent event) {
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/LoginWindow.fxml"));
 
@@ -308,13 +310,10 @@ public class PersonMenuController {
 
     private boolean checkNumbers() {
 
-        try {
-            double temp = Double.parseDouble(fieldCheck.getText());
-        } catch (NumberFormatException e) {
-            labelQuantity.setText("");
+        if (CheckNumber.checkNumbers(fieldCheck.getText())) {
+            return true;
+        } else {
             return false;
         }
-
-        return true;
     }
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import classes.CheckNumber;
 import classes.Currence;
 import classes.DbConnection.DbHandler;
 import com.jfoenix.controls.JFXButton;
@@ -23,17 +24,10 @@ import java.sql.Statement;
 
 public class AddFundController {
 
-    @FXML
-    private ChoiceBox<Currence> choiseBoxFunds;
-
-    @FXML
-    private JFXTextField fieldFunds;
-
-    @FXML
-    private JFXButton buttonMainMenu;
-
-    @FXML
-    private JFXButton buttonAdd;
+    @FXML private ChoiceBox<Currence> choiseBoxFunds;
+    @FXML private JFXTextField fieldFunds;
+    @FXML private JFXButton buttonMainMenu;
+    @FXML private JFXButton buttonAdd;
 
     private String name;
     private Connection connection;
@@ -41,14 +35,13 @@ public class AddFundController {
 
     @FXML
     void initialize() {
+
+        handler = new DbHandler();
         name = PersonMenuController.getInstance().getName();
         addCurrenceToChoiceBox();
 
         choiseBoxFunds.setValue(Currence.PLN);
-
         fieldFunds.addEventFilter(Event.ANY, x -> checkNumbers());
-
-        handler = new DbHandler();
     }
 
     @FXML
@@ -58,9 +51,7 @@ public class AddFundController {
         connection = handler.getConnection();
 
         double temp = 0;
-
         String q1 = "SELECT " + currencyPlus + " FROM CUSTOMERS WHERE " + "names = " + "'" + name + "'" ;
-
 
         try {
             Statement st = connection.createStatement();
@@ -81,8 +72,9 @@ public class AddFundController {
         }
     }
 
-        @FXML
+    @FXML
     void backToMainMenu(ActionEvent event) {
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxmls/PersonWindow.fxml"));
             Parent root = loader.load();
@@ -100,52 +92,16 @@ public class AddFundController {
     private void addCurrenceToChoiceBox() {
 
         for (Currence current : Currence.values()) {
-
             choiseBoxFunds.getItems().add(current);
         }
     }
 
     private void checkNumbers() {
 
-        if (choiseBoxFunds.getValue() != null) {
-
-            try {
-                Double temp = Double.parseDouble(fieldFunds.getText());
-
-                if (test(fieldFunds.getText())) {
-                    buttonAdd.setDisable(false);
-                } else {
-                    buttonAdd.setDisable(true);
-                }
-            } catch (NumberFormatException e) {
-                buttonAdd.setDisable(true);
-            }
+        if (choiseBoxFunds.getValue() != null && CheckNumber.checkNumbers(fieldFunds.getText())) {
+            buttonAdd.setDisable(false);
+        } else {
+            buttonAdd.setDisable(true);
         }
-    }
-
-    private boolean test(String s) {
-
-        int b = s.length();
-        boolean temp = false;
-        int temp2 = 0;
-
-        for (int i = 0; i < b; i++) {
-
-            if (temp) {
-                temp2++;
-            }
-
-            if (s.charAt(i) == '.') {
-                temp = true;
-            }
-
-            if (temp2 > 2) {
-                return false;
-            } else if (temp2 == 0 && temp == true && (b - 1) == i) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
