@@ -26,7 +26,6 @@ public class Main extends Application {
         borderPane.setCenter(root);
 
         Scene scene = new Scene(borderPane);
-        borderPane.setStyle("-fx-background-color: #000000");
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("International Cantor");

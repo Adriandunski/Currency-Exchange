@@ -15,12 +15,12 @@ public class DbHandler extends Configs {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             dbConnection = DriverManager.getConnection(connection, Configs.dbUser, Configs.dbPass);
+            System.out.println("Connected");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return dbConnection;
     }
 }
